@@ -1,0 +1,21 @@
+---
+- name: Control flows using loop and when for conditionals
+  hosts: centos1
+  vars:
+    mariadb_packages:
+      - mariadb-server
+      - python3-PyMySQL
+  tasks:
+    # This tasks loops the mariadb-packages to install those packages
+    - name: Mariadb packages are installed
+      ansible.builtin.dnf:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ mariadb_packages }}"
+      when: ansible_facts['distribution'] == "centos"
+
+    - name: start Mariadb service
+      ansible.builtin.service:
+        name: mariadb
+        state: started
+        enabled: true
