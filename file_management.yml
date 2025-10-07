@@ -1,0 +1,52 @@
+---
+- name: Preparing servers
+  hosts: centos1
+  tasks:
+    - name: Fetch the /var/log/secure log file from managed hosts
+      ansible.builtin.fetch:
+        src: /var/log/secure
+        dest: secure-backups
+
+    - name: Ensure the /home/devops/files directory exists
+      ansible.builtin.file:
+        path: /home/memehack/files
+        state: directory
+        owner: memehack
+        group: memehack
+        mode: 0775
+        setype: samba_share_t
+
+    - name: Add single line of the text to a file
+      ansible.builtin.lineinfile:
+        path: /home/memehack/files/users.txt
+        line: This line was added by the lineinfile module
+        state: present
+        create: true
+        owner: memehack
+        group: memehack
+        mode: 0664
+
+    - name: Ensure the /home/memehack/files directory exists
+      ansible.builtin.file:
+        path: /home/memehack/files
+        state: directory
+        owner: memehack
+        group: memehack
+        mode: 0775
+        setype: _default
+
+    - name: Copy a file to managed hosts ans set ownership and permissions
+      ansible.builtin.copy:
+        src: system
+        dest: /home/memehack/files/
+        owner: memehack
+        group: memehack
+        mode: 0664
+
+    - name: Add a block of text to an existing file
+      ansible.builtin.blockinfile:
+        path: /home/memehack/files/users.txt
+        block: |
+          This block of the text consists of two lines
+          They Have been added by the blockinfile module
+        state: present
